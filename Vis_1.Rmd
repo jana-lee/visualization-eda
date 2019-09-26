@@ -1,0 +1,19 @@
+---
+title: "Viz 1_EDA"
+author: "Jana Lee"
+date: "9/26/2019"
+output: html_document
+---
+# viz_and_eda
+
+This is the repo for examples related to Viz and EDA.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggridges)
+```
+
