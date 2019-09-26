@@ -169,6 +169,5 @@ Ridge plots
 weather_df %>%
   ggplot(aes(x = tmax, y = name)) +
   geom_density_ridges(scale = .85)
-
 ```
 
