@@ -11,9 +11,80 @@ This is the repo for examples related to Viz and EDA.
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+Load in tidyverse and ggridges.
 ```{r}
 library(tidyverse)
 library(ggridges)
+```
+
+Loading in rnoaa package, the r package that loads in national weather service data. They make data publicly available. This will be the dataset we are going to use
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(c("USW00094728", "USC00519397", "USS0023B17S"),
+                      var = c("PRCP", "TMIN", "TMAX"), 
+                      date_min = "2017-01-01",
+                      date_max = "2017-12-31") %>%
+  mutate(
+    name = recode(id, USW00094728 = "CentralPark_NY", 
+                      USC00519397 = "Waikiki_HA",
+                      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) %>%
+  select(name, id, everything())
+```
+
+## create a ggplot
+The follow below happens because we definied the dataset itself and the x and y axes. However, we haven't told it what plot we are going to make yet.
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax))
+
+# adding geompoint allows us to plot this.
+ggplot(weather_df, aes(x = tmin, y = tmax)) + geom_point()
+```
+
+An alternate way of making this plot. Creating a plot and printing it in the same step.
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point()
+```
+
+Saving Initial plots.
+```{r}
+scatterplot = 
+  weather_df %>%
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point()
+
+# this is useful when you want to create a plot and you want to save it into an initial folder for people to reference.
+scatterplot
+```
+
+Adding color.
+alpha blending takes a value that's not completely transparent. Get a little bit of transparency.
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(color = name, alpha = .40))
+```
+
+Why do aes positions matter?
+Turn of SE (standard errors - False)
+first:
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(color = name, alpha = .40)) +
+  geom_smooth (se = FALSE)
+```
+
+vs. 
+
+second
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(aes(color = name, alpha = .40)) +
+  geom_smooth (se = FALSE)
 ```
 
