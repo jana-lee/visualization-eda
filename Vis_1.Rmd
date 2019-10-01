@@ -1,5 +1,5 @@
 ---
-title: "Viz 1_EDA"
+title: "Viz 1 & 2_EDA"
 author: "Jana Lee"
 date: "9/26/2019"
 output: html_document
@@ -170,4 +170,166 @@ weather_df %>%
   ggplot(aes(x = tmax, y = name)) +
   geom_density_ridges(scale = .85)
 ```
+
+## Saving a plot. Make sure you write the code, bc exporting it will not work.
+```{r}
+weather_plot = ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) 
+
+ggsave("weather_plot.pdf", weather_plot, width = 8, height = 5)
+
+```
+
+Can only be as wide as the document is
+```{r, fig. width = 12}
+weather_df %>%
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point(alpha = .4) +
+  geom_smooth(se = FALSE)
+```
+
+
+# Lecture 2: Viz and EDA Part 2
+
+## making new plots
+
+```{r}
+weather_df %>%
+    ggplot(aes(x = tmin, y = tmax, color = name)) + geom_point(alpha = .5)
+```
+
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USC00519397", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2017-01-01",
+    date_max = "2017-12-31") %>%
+  mutate(
+    name = recode(id, USW00094728 = "CentralPark_NY", 
+                      USC00519397 = "Waikiki_HA",
+                      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) %>%
+  select(name, id, everything())
+```
+
+
+## Labels, Ticks
+Always label your graphs!
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = "Temperature plot",
+    x = "Minimum daily temperature (C)",
+    y = "Maxiumum daily temperature (C)",
+    caption = "Data from the rnoaa package"
+  )
+```
+
+## Scaling 
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = "Temperature plot",
+    x = "Minimum daily temperature (C)",
+    y = "Maxiumum daily temperature (C)",
+    caption = "Data from the rnoaa package") + 
+  scale_x_continuous(
+    breaks = c(-15, -5, 20),
+    labels = c("-15º C", "0 (still too cold", "15"))
+# have tick marks wherever you want it! It is under breaks.
+```
+
+
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = "Temperature plot",
+    x = "Minimum daily temperature (C)",
+    y = "Maxiumum daily temperature (C)",
+    caption = "Data from the rnoaa package") + 
+  scale_x_continuous(
+    breaks = c(-15, 0, 15), 
+    labels = c("-15ºC", "0", "15"),
+    limits = c(-20, 30)) + 
+  scale_y_continuous(
+    trans = "sqrt", 
+    position = "right")
+# This might drop a few rows bc can't take sqrt of negative (90 rows containing missing values removed)
+
+# You can also change scale_y (sqrt) to change the scale for y.
+```
+
+## Colors & Themes
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = "Temperature plot",
+    x = "Minimum daily temperature (C)",
+    y = "Maxiumum daily temperature (C)",
+    caption = "Data from the rnoaa package") + 
+  scale_color_hue(name = "Location", h = c(100, 200))
+
+# Choosing colors by hand will make you go crazy, so don't spend so much time on this.
+```
+
+## Viridis package
+Solves a very specific problem in tidyverse.We downloaded this in Problem 0. As a general rule, use this color palette.
+
+```{r}
+ggp_temp_plot = 
+  weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = "Temperature plot",
+    x = "Minimum daily temperature (C)",
+    y = "Maxiumum daily temperature (C)",
+    caption = "Data from the rnoaa package"
+  ) + 
+  viridis::scale_color_viridis(
+    name = "Location", 
+    discrete = TRUE
+  )
+# In place of scale_color_hue, we're going to use viridis here. We have to specifity that discrete = TRUE!
+```
+
+## Themes 
+Global things that describe what the plot looks like, the behavior of the plot.
+Legend Position: 
+
+```{r}
+ggp_temp_plot + 
+  theme(legend.position = "bottom")
+
+# Put legend on the bottom preserves more space for the actual plot itself.
+
+# The default of the background is gray. We can change this.
+
+ggp_temp_plot + 
+  theme_bw() + 
+  theme(legend.position = "bottom")
+
+ggp_base + 
+  theme_minimal () 
+  theme(legend.position = "bottom")
+
+ggp_temp_plot + 
+  theme_classic() + 
+  theme(legend.position = "bottom")
+```
+
+How sensitive should we be about the warning messages? Moderately... generating bc missing values? Nothing we can do about that
+
+
 
