@@ -1,9 +1,10 @@
 ---
-title: "Viz 1 & 2_EDA"
+title: "Viz 8, 9 &103_EDA"
 author: "Jana Lee"
 date: "9/26/2019"
 output: html_document
 ---
+# Lecture 8: Viz Part 1
 # viz_and_eda
 
 This is the repo for examples related to Viz and EDA.
@@ -182,7 +183,7 @@ ggsave("weather_plot.pdf", weather_plot, width = 8, height = 5)
 ```
 
 Can only be as wide as the document is
-```{r, fig. width = 12}
+```{r,}
 weather_df %>%
   ggplot(aes(x = date, y = tmax, color = name)) +
   geom_point(alpha = .4) +
@@ -190,7 +191,10 @@ weather_df %>%
 ```
 
 
-# Lecture 2: Viz and EDA Part 2
+
+
+
+# Lecture 9: Viz Part 2
 
 ## making new plots
 
@@ -443,12 +447,12 @@ weather_df %>%
 
 ```{r}
 pup_data = 
-  read_csv("./data/FAS_pups.csv", col_types = "ciiiii") %>%
+  read_csv("./data_import_examples/FAS_pups.csv", col_types = "ciiiii") %>%
   janitor::clean_names() %>%
   mutate(sex = recode(sex, `1` = "male", `2` = "female")) 
 
 litter_data = 
-  read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") %>%
+  read_csv("./data_import_examples/FAS_litters.csv", col_types = "ccddiiii") %>%
   janitor::clean_names() %>%
   select(-pups_survive) %>%
   separate(group, into = c("dose", "day_of_tx"), sep = 3) %>%
@@ -471,6 +475,17 @@ fas_data %>%
 
 # This is a data tidying problem NOT a ggplot problem.
 ```
+
+
+
+
+
+# Lecture 10: EDA Part 3
+Grouping doesn't change your dataset, but you've added a layer ontop of your dataset
+
+
+
+
 
 
 
